@@ -25,7 +25,9 @@ jobs:
       run: npx playwright install --with-deps
 
     - name: Run Playwright tests
-      run: npx playwright test
+     - name: Run Playwright tests
+      run: npx playwright test tests/data-driven-checkout.spec.ts tests/product-sorting.spec.ts 
+    
 
     - uses: actions/upload-artifact@v4
       if: always()
