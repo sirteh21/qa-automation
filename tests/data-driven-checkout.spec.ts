@@ -4,36 +4,37 @@ import { ProductsPage } from '../pages/ProductsPage';
 import { CheckoutPage } from '../pages/CheckoutPage';
 import testData from '../data/test-data.json';
 
-test.describe('Data-Driven Checkout Suite', () => {
+test.describe('Data-Driven Suite - SauceDemo', () => {
 
-  //users som
-  const users = [
-    { key: 'standardUser', data: testData.standardUser, shouldSucceed: true },
-    { key: 'problemUser', data: testData.problemUser, shouldSucceed: false } // کاربر مشکل‌دار ممکن است رفتار متفاوتی داشته باشد
-  ];
+  test('should complete purchase successfully for standard user', async ({ page }) => {
+    const loginPage = new LoginPage(page);
+    const productsPage = new ProductsPage(page);
+    const checkoutPage = new CheckoutPage(page);
 
-  for (const { key, data } of users) {
-    test(`should handle checkout flow for ${key}`, async ({ page }) => {
-      const loginPage = new LoginPage(page);
-      const productsPage = new ProductsPage(page);
-      const checkoutPage = new CheckoutPage(page);
+    await loginPage.goto();
+    await loginPage.login(testData.standardUser.username, testData.standardUser.password);
+    
+    await productsPage.addProductToCart();
+    await checkoutPage.proceedToCheckout();
+    await checkoutPage.fillCustomerInfo(
+      testData.standardUser.firstName, 
+      testData.standardUser.lastName, 
+      testData.standardUser.postalCode
+    );
+    await checkoutPage.finishOrder();
+    await expect(checkoutPage.successHeader).toHaveText('Thank you for your order!');
+  });
 
-      await loginPage.goto();
-      await loginPage.login(data.username, data.password);
-      
-      // اگر کاربر استاندارد بود، فرآیند خرید را تا انتها چک می‌کنیم
-      if (key === 'standardUser') {
-        await productsPage.addProductToCart();
-        await checkoutPage.proceedToCheckout();
-        await checkoutPage.fillCustomerInfo(data.firstName, data.lastName, data.postalCode);
-        await checkoutPage.finishOrder();
-        await expect(checkoutPage.successHeader).toHaveText('Thank you for your order!');
-      } else {
-        // برای کاربر مشکل‌دار می‌توانید سناریوی دلخواه (مثل بررسی خطا) را بنویسید
-        // فعلاً بررسی می‌کنیم که لاگین انجام شده یا خیر
-        console.log(`Running test for ${key}`);
-      }
-    });
-  }
+  test('should show error message for locked out user', async ({ page }) => {
+    const loginPage = new LoginPage(page);
+
+    await loginPage.goto();
+    await loginPage.login(testData.lockedOutUser.username, testData.lockedOutUser.password);
+    
+    // Assert that the error banner appears with the expected text
+    const errorMessage = page.locator('[data-test="error"]');
+    await expect(errorMessage).toBeVisible();
+    await expect(errorMessage).toHaveText(testData.lockedOutUser.expectedError);
+  });
 
 });
