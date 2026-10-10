@@ -1,0 +1,16 @@
+{
+  "standardUser": {
+    "username": "standard_user",
+    "password": "secret_sauce",
+    "firstName": "Farhad",
+    "lastName": "Baghery",
+    "postalCode": "55318"
+  },
+  "problemUser": {
+    "username": "problem_user",
+    "password": "secret_sauce",
+    "firstName": "Test",
+    "lastName": "User",
+    "postalCode": "12345"
+  }
+}
