@@ -1,18 +1,14 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { ProductsPage } from '../pages/ProductsPage';
+import { test, expect } from '../fixtures/base-test';
 import testData from '../data/test-data.json';
 
 test.describe('Product Sorting Suite - SauceDemo', () => {
 
-  test.beforeEach(async ({ page }) => {
-    const loginPage = new LoginPage(page);
+  test.beforeEach(async ({ loginPage }) => {
     await loginPage.goto();
     await loginPage.login(testData.standardUser.username, testData.standardUser.password);
   });
 
-  test('should sort products by Name (A to Z)', async ({ page }) => {
-    const productsPage = new ProductsPage(page);
+  test('should sort products by Name (A to Z)', async ({ productsPage }) => {
     await productsPage.sortBy('az');
     
     const names = await productsPage.getItemNames();
@@ -21,8 +17,7 @@ test.describe('Product Sorting Suite - SauceDemo', () => {
     expect(names).toEqual(sortedNames);
   });
 
-  test('should sort products by Price (Low to High)', async ({ page }) => {
-    const productsPage = new ProductsPage(page);
+  test('should sort products by Price (Low to High)', async ({ productsPage }) => {
     await productsPage.sortBy('lohi');
     
     const prices = await productsPage.getItemPrices();
@@ -31,8 +26,7 @@ test.describe('Product Sorting Suite - SauceDemo', () => {
     expect(prices).toEqual(sortedPrices);
   });
 
-  test('should sort products by Price (High to Low)', async ({ page }) => {
-    const productsPage = new ProductsPage(page);
+  test('should sort products by Price (High to Low)', async ({ productsPage }) => {
     await productsPage.sortBy('hilo');
     
     const prices = await productsPage.getItemPrices();
