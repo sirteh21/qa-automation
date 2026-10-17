@@ -3,34 +3,30 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
   
-  /* Configures the HTML reporter to output detailed test reports */
-  reporter: [['html', { open: 'never' }]],
-
   use: {
-    baseURL: 'https://www.saucedemo.com',
     trace: 'on-first-retry',
-    /* Automatically capture screenshots only on failure */
-    screenshot: 'only-on-failure',
-    /* Retain video recordings for failed test runs */
-    video: 'retain-on-failure',
   },
 
   projects: [
+    // ۱. setup project to authenticate and save cookies
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+
+    // ۲. main project that uses the saved cookies for authenticated tests
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+        //cokies and local storage will be loaded from the specified file
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'], // important to ensure that the setup project runs before this one
     },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    
+    // ۳. additional projects for other browsers if needed
   ],
 });
