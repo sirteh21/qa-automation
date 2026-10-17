@@ -4,15 +4,23 @@
     "password": "secret_sauce",
     "firstName": "Farhad",
     "lastName": "Baghery",
-    "postalCode": "55318"
+    "postalCode": "55311"
   },
-  "problemUser": {
-    "username": "problem_user",
-    "password": "secret_sauce"
-  },
-  "lockedOutUser": {
-    "username": "locked_out_user",
-    "password": "secret_sauce",
-    "expectedError": "Epic sadface: Sorry, this user has been locked out."
-  }
+  "invalidUsers": [
+    {
+      "username": "locked_out_user",
+      "password": "secret_sauce",
+      "expectedError": "Epic sadface: Sorry, this user has been locked out."
+    },
+    {
+      "username": "invalid_user",
+      "password": "wrong_password",
+      "expectedError": "Epic sadface: Username and password do not match any user in this service"
+    },
+    {
+      "username": "",
+      "password": "secret_sauce",
+      "expectedError": "Epic sadface: Username is required"
+    }
+  ]
 }

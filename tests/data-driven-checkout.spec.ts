@@ -18,13 +18,16 @@ test.describe('Data-Driven Suite - SauceDemo', () => {
     await expect(checkoutPage.successHeader).toHaveText('Thank you for your order!');
   });
 
-  test('should show error message for locked out user', async ({ page, loginPage }) => {
-    await loginPage.goto();
-    await loginPage.login(testData.lockedOutUser.username, testData.lockedOutUser.password);
+  // حلقه پویای Data-Driven برای تست کاربران نامعتبر/خطاها
+  for (const user of testData.invalidUsers) {
+    test(`should show error message for user: ${user.username || 'empty username'}`, async ({ page, loginPage }) => {
+      await loginPage.goto();
+      await loginPage.login(user.username, user.password);
 
-    const errorMessage = page.locator('[data-test="error"]');
-    await expect(errorMessage).toBeVisible();
-    await expect(errorMessage).toHaveText(testData.lockedOutUser.expectedError);
-  });
+      const errorMessage = page.locator('[data-test="error"]');
+      await expect(errorMessage).toBeVisible();
+      await expect(errorMessage).toHaveText(user.expectedError);
+    });
+  }
 
 });
